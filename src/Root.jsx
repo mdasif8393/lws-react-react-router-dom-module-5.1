@@ -1,14 +1,16 @@
 import { Outlet } from "react-router";
-import { Form, NavLink, useLoaderData } from "react-router-dom";
+import { Form, NavLink, useLoaderData, useNavigation } from "react-router-dom";
 
 export default function Root() {
+  const navigation = useNavigation();
+
   const { contacts } = useLoaderData();
   return (
     <>
       <div id="sidebar">
         <h1>React Router Contacts</h1>
         <div>
-          <form id="search-form" role="search">
+          <Form id="search-form" role="search">
             <input
               id="q"
               aria-label="Search contacts"
@@ -18,7 +20,7 @@ export default function Root() {
             />
             <div id="search-spinner" aria-hidden hidden={true} />
             <div className="sr-only" aria-live="polite"></div>
-          </form>
+          </Form>
           <Form method="post">
             <button type="submit">New</button>
           </Form>
@@ -28,7 +30,12 @@ export default function Root() {
             <ul>
               {contacts.map((contact) => (
                 <li key={contact.id}>
-                  <NavLink to={`contacts/${contact.id}`}>
+                  <NavLink
+                    to={`contacts/${contact.id}`}
+                    className={({ isActive, isPending }) =>
+                      isActive ? "active" : isPending ? "pending" : ""
+                    }
+                  >
                     {contact.first || contact.last ? (
                       <>
                         {contact.first} {contact.last}
@@ -48,7 +55,10 @@ export default function Root() {
           )}
         </nav>
       </div>
-      <div id="detail">
+      <div
+        id="detail"
+        className={navigation.state === "loading" ? "loading" : ""}
+      >
         <Outlet />
       </div>
     </>
